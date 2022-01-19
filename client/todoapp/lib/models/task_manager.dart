@@ -13,11 +13,18 @@ class TaskManager extends ChangeNotifier {
 
   final List<Task> _tasks = [];
   List<Task> get tasks => _tasks;
-
-  void addE(final Task task) {
+  
+  Future add(final Task task) async {
+    final Uri restAPIURL = Uri.parse("https://tdd-todoapp.herokuapp.com/add");
+    http.Response response = await httpClient.post(restAPIURL,
+        headers: customHeaders, body: jsonEncode(task));
     _tasks.add(task);
     notifyListeners();
+    return response.body;
   }
+
+  
+  // updateTask and deleteData should be considered again. Backend part might need minor fix
 
   Future updateTask(final Task task) async{
     final Uri restAPIURL = Uri.parse("https://tdd-todoapp.herokuapp.com/put");
@@ -25,20 +32,6 @@ class TaskManager extends ChangeNotifier {
       'isCompleted': !task.isCompleted,
     }));
     task.isCompleted = !task.isCompleted;
-    notifyListeners();
-    return response.body;
-  }
-
-  void deleteTask(final Task task) {
-    _tasks.remove(task);
-    notifyListeners();
-  }
-
-  Future add(final Task task) async {
-    final Uri restAPIURL = Uri.parse("https://tdd-todoapp.herokuapp.com/add");
-    http.Response response = await httpClient.post(restAPIURL,
-        headers: customHeaders, body: jsonEncode(task));
-    _tasks.add(task);
     notifyListeners();
     return response.body;
   }
